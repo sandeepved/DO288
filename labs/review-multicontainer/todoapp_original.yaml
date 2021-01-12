@@ -33,14 +33,14 @@ objects:
         type: Source
 - apiVersion: v1
   data:
-    init: ${CLEAN_DATABASE}
+    init: "false"
   kind: ConfigMap
   metadata:
     name: todoapp
 - apiVersion: v1
-  stringData:
-    password: ${PASSWORD}
-    user: todoapp
+  data:
+    password: bXlwYXNz
+    user: dG9kb2FwcA==
   kind: Secret
   metadata:
     name: tododb
@@ -147,18 +147,6 @@ objects:
           resources: {}
           terminationMessagePath: /dev/termination-log
           terminationMessagePolicy: File
-          livenessProbe:
-            httpGet:
-              path: /todo/api/items-count
-              port: 8080
-            initialDelaySeconds: 10
-            timeoutSeconds: 3
-          readinessProbe:
-            httpGet:
-              path: /todo/api/host
-              port: 8080
-            initialDelaySeconds: 10
-            timeoutSeconds: 3
         dnsPolicy: ClusterFirst
         restartPolicy: Always
         schedulerName: default-scheduler
@@ -166,7 +154,6 @@ objects:
         terminationGracePeriodSeconds: 30
     test: false
     triggers:
-    - type: ConfigChange
     - imageChangeParams:
         automatic: true
         containerNames:
@@ -239,7 +226,6 @@ objects:
           name: tododb-volume-1
     test: false
     triggers:
-    - type: ConfigChange
     - imageChangeParams:
         automatic: true
         containerNames:
@@ -291,7 +277,7 @@ objects:
       app: backend
     name: backend
   spec:
-    host: ${BACKEND}
+    host: backend-sandeepv-sg-review-service.apps.ap45.prod.nextcle.com
     port:
       targetPort: 8080-tcp
     to:
@@ -331,7 +317,7 @@ objects:
         containers:
         - env:
           - name: BACKEND_HOST
-            value: ${BACKEND}
+            value: api.example.com
           imagePullPolicy: Always
           name: frontend
           ports:
@@ -382,7 +368,7 @@ objects:
       app: frontend
     name: frontend
   spec:
-    host: ${HOSTNAME}
+    host: frontend-sandeepv-sg-review-dockerfile.apps.ap45.prod.nextcle.com
     port:
       targetPort: 8080-tcp
     to:
@@ -414,8 +400,6 @@ parameters:
 - displayName: Secret for webhooks
   name: SECRET
   required: true
-  from: '[a-zA-Z0-9]{40}'
-  generate: expression
 - displayName: MySQL database password for the todoapp user
   name: PASSWORD
   required: true
@@ -425,7 +409,4 @@ parameters:
 - displayName: Host name to acccess the To Do List back-end HTTP API
   name: BACKEND
   required: true
-- displayName: Indicates whether the application initializes the database on start up
-  name: CLEAN_DATABASE
-  required: true
-  value: "false"
+
